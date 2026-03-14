@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XCASH Accounting - نظام محاسبة متكامل</title>
+    
+    <!-- خطوط جوجل -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome للأيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* إعادة تعيين وتحسينات أساسية */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* منع التحديد والنسخ */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+        /* منع النسخ من جميع العناصر */
+        * {
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* السماح بالنسخ فقط لحقول الإدخال للضرورة */
+        input, textarea {
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+            user-select: text !important;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(circle at 10% 20%, rgba(0, 163, 255, 0.1) 0%, rgba(0, 0, 0, 0.95) 90%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* خلفية ثلاثية الأبعاد متحركة */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 163, 255, 0.15) 0%, transparent 30%),
+                radial-gradient(circle at 80% 70%, rgba(0, 255, 163, 0.15) 0%, transparent 30%),
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 10px);
+            z-index: -1;
+            animation: bgMove 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.05) rotate(1deg); }
+        }
+
+        /* جسيمات ثلاثية الأبعاد */
+        .particle {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: rgba(0, 163, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            box-shadow: 0 0 20px rgba(0, 163, 255, 0.5);
+            animation: particleFloat 15s infinite linear;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* حاوية رئيسية مع تأثير ثلاثي الأبعاد */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        /* هيدر ثلاثي الأبعاد */
+        header {
+            background: rgba(10, 20, 40, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 163, 255, 0.3);
+            border-radius: 30px;
+            padding: 30px 20px;
+            margin-bottom: 40px;
+            box-shadow: 
+                0 30px 50px rgba(0, 0, 0, 0.5),
+                0 0 0 2px rgba(0, 163, 255, 0.1) inset,
+                0 0 30px rgba(0, 163, 255, 0.3);
+            transform: translateZ(20px);
+            animation: float 6s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(0, 163, 255, 0.3), transparent, rgba(0, 255, 163, 0.3), transparent);
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .logo {
+            width: 180px;
+            height: auto;
+            filter: drop-shadow(0 10px 30px rgba(0, 163, 255, 0.5));
+            animation: logoFloat 3s ease-in-out infinite;
+            transform-style: preserve-3d;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0) rotateY(0deg); }
+            50% { transform: translateY(-10px) rotateY(10deg); }
+        }
+
+        .title {
+            font-size: 52px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff, #00a3ff, #00ffa3, #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 163, 255, 0.5);
+            margin: 15px 0;
+            letter-spacing: 2px;
+            transform: translateZ(30px);
+        }
+
+        .made {
+            font-size: 22px;
+            font-weight: 600;
+            color: #00ffa3;
+            text-shadow: 0 0 20px rgba(0, 255, 163, 0.5);
+            background: rgba(0, 0, 0, 0.3);
+            display: inline-block;
+            padding: 8px 30px;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 255, 163, 0.3);
+            backdrop-filter: blur(10px);
+            transform: translateZ(20px);
+        }
+
+        /* قسم البطل ثلاثي الأبعاد */
+        .hero {
+            background: rgba(20, 30, 50, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 163, 255, 0.3);
+            border-radius: 50px;
+            padding: 80px 40px;
+            margin: 40px 0;
+            text-align: center;
+            box-shadow: 
+                0 50px 80px rgba(0, 0, 0, 0.5),
+                0 0 0 2px rgba(0, 163, 255, 0.1) inset,
+                0 0 50px rgba(0, 163, 255, 0.3);
+            transform: translateZ(40px) rotateX(2deg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 50%, rgba(0, 163, 255, 0.2), transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00a3ff, #00ffa3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(0, 163, 255, 0.5);
+            transform: translateZ(50px);
+        }
+
+        .hero p {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 900px;
+            margin: 0 auto;
+            line-height: 1.8;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            transform: translateZ(30px);
+        }
+
+        /* شبكة البطاقات ثلاثية الأبعاد */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            padding: 20px;
+            margin: 60px 0;
+            perspective: 2000px;
+        }
+
+        .card {
+            background: rgba(15, 25, 45, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 163, 255, 0.3);
+            border-radius: 30px;
+            padding: 40px 30px;
+            box-shadow: 
+                0 30px 50px rgba(0, 0, 0, 0.5),
+                0 0 0 2px rgba(0, 163, 255, 0.1) inset,
+                0 0 30px rgba(0, 163, 255, 0.2);
+            transform: translateZ(20px) rotateX(2deg);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateZ(60px) rotateX(0deg) scale(1.05);
+            box-shadow: 
+                0 50px 80px rgba(0, 0, 0, 0.6),
+                0 0 0 3px rgba(0, 163, 255, 0.3) inset,
+                0 0 60px rgba(0, 163, 255, 0.4);
+            border-color: rgba(0, 163, 255, 0.5);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 163, 255, 0.2), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card h2 {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00a3ff, #00ffa3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transform: translateZ(30px);
+        }
+
+        .card h2 i {
+            font-size: 40px;
+            color: #00a3ff;
+            filter: drop-shadow(0 0 20px rgba(0, 163, 255, 0.5));
+        }
+
+        .card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .card li {
+            margin-bottom: 15px;
+            padding-right: 30px;
+            position: relative;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            transform: translateZ(20px);
+        }
+
+        .card li::before {
+            content: '✓';
+            color: #00ffa3;
+            position: absolute;
+            right: 0;
+            font-weight: bold;
+            font-size: 20px;
+            text-shadow: 0 0 10px rgba(0, 255, 163, 0.5);
+        }
+
+        /* صندوق التحذير */
+        .warning {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 25px;
+            color: #ffc107;
+            box-shadow: 0 0 30px rgba(255, 193, 7, 0.2);
+            transform: translateZ(15px);
+        }
+
+        .warning i {
+            color: #ffc107;
+            margin-left: 10px;
+            font-size: 24px;
+        }
+
+        /* قسم التحميل */
+        .download-box {
+            background: rgba(0, 163, 255, 0.1);
+            border: 1px solid rgba(0, 163, 255, 0.3);
+        }
+
+        .checkbox-group {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .checkbox-item {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: #00a3ff;
+        }
+
+        .checkbox-item label {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+        }
+
+        /* زر التحميل ثلاثي الأبعاد */
+        .btn-download {
+            background: linear-gradient(135deg, #00a3ff, #00ffa3);
+            color: #000;
+            border: none;
+            padding: 20px 45px;
+            font-size: 24px;
+            font-weight: 800;
+            border-radius: 60px;
+            cursor: not-allowed;
+            opacity: 0.5;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto;
+            display: inline-block;
+            pointer-events: none;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            transform: translateZ(20px);
+        }
+
+        .btn-download.enabled {
+            opacity: 1;
+            cursor: pointer;
+            pointer-events: auto;
+            animation: btnPulse 2s infinite;
+            box-shadow: 0 0 30px rgba(0, 255, 163, 0.5);
+        }
+
+        .btn-download.enabled:hover {
+            transform: translateZ(40px) scale(1.1);
+            box-shadow: 0 20px 40px rgba(0, 255, 163, 0.6);
+        }
+
+        .btn-download i {
+            margin-left: 15px;
+            font-size: 28px;
+        }
+
+        @keyframes btnPulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 163, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(0, 255, 163, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 163, 0); }
+        }
+
+        /* قسم التواصل */
+        .contact-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 163, 255, 0.3);
+            border-radius: 25px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            transform: translateZ(25px);
+        }
+
+        .contact-box h3 {
+            font-size: 24px;
+            color: #00a3ff;
+            margin-bottom: 15px;
+        }
+
+        .developer-email {
+            color: #00ffa3 !important;
+            font-size: 20px !important;
+            font-weight: 700;
+            direction: ltr;
+            background: rgba(0, 163, 255, 0.1);
+            padding: 15px 20px;
+            border-radius: 15px;
+            display: inline-block;
+            border: 1px solid rgba(0, 255, 163, 0.3);
+            margin: 15px 0;
+            word-break: break-all;
+        }
+
+        .developer-email i {
+            color: #00a3ff;
+            margin-left: 10px;
+        }
+
+        .phone-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 163, 255, 0.3);
+            border-radius: 15px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 18px;
+            color: white;
+            margin: 15px 0;
+        }
+
+        .phone-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .btn-whatsapp:hover {
+            transform: scale(1.05) translateZ(30px);
+            box-shadow: 0 0 30px rgba(37, 211, 102, 0.5);
+        }
+
+        /* الفوتر ثلاثي الأبعاد */
+        footer {
+            background: rgba(5, 15, 30, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 163, 255, 0.3);
+            padding: 50px 20px 30px;
+            margin-top: 80px;
+            border-radius: 50px 50px 0 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transform: translateZ(10px);
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00a3ff, #00ffa3, transparent);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-logo {
+            width: 100px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(0, 163, 255, 0.5));
+        }
+
+        .footer-text {
+            font-size: 18px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .copyright {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* تحسينات للجوال */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 36px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero p {
+                font-size: 18px;
+            }
+
+            .card h2 {
+                font-size: 28px;
+            }
+
+            .btn-download {
+                font-size: 20px;
+                padding: 15px 30px;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* منع فتح قائمة السياق */
+        body {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* منع السحب */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- جسيمات ثلاثية الأبعاد -->
+    <div id="particles"></div>
+
+    <script>
+        // إنشاء جسيمات ثلاثية الأبعاد
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            if (!particlesContainer) return;
+            
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.width = (Math.random() * 6 + 2) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.background = `rgba(${Math.random() * 100 + 155}, ${Math.random() * 100 + 155}, 255, ${Math.random() * 0.5 + 0.3})`;
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // حماية قوية ضد النسخ والفحص
+        (function() {
+            // منع النقر بالزر الأيمن
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // منع اختصارات لوحة المفاتيح الخطيرة
+            document.addEventListener('keydown', function(e) {
+                // منع F12
+                if (e.key === 'F12') {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // منع Ctrl+Shift+I (فتح أدوات المطور)
+                if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // منع Ctrl+Shift+J (فتح الكونسول)
+                if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // منع Ctrl+Shift+C (فحص العنصر)
+                if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // منع Ctrl+U (عرض المصدر)
+                if (e.ctrlKey && e.key === 'u') {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // منع Ctrl+S (حفظ الصفحة)
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // منع Ctrl+P (طباعة)
+                if (e.ctrlKey && e.key === 'p') {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // كشف محاولة فتح أدوات المطور
+            let devtools = {
+                open: false,
+                orientation: undefined
+            };
+
+            // كشف تغيير الحجم (لكشف أدوات المطور)
+            const threshold = 160;
+            setInterval(function() {
+                if (window.outerWidth - window.innerWidth > threshold || 
+                    window.outerHeight - window.innerHeight > threshold) {
+                    if (!devtools.open) {
+                        devtools.open = true;
+                        // مسح الصفحة أو إعادة التوجيه
+                        document.body.innerHTML = '<h1 style="color:red;text-align:center;margin-top:50px;">⚠️ غير مسموح بفتح أدوات المطور</h1>';
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    }
+                } else {
+                    devtools.open = false;
+                }
+            }, 1000);
+
+            // منع النسخ
+            document.addEventListener('copy', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            document.addEventListener('cut', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            document.addEventListener('paste', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // منع السحب والإفلات
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            document.addEventListener('drop', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // تحذير في الكونسول
+            console.log('%c⚠️ تحذير أمني ⚠️', 'color: red; font-size: 20px; font-weight: bold;');
+            console.log('%cهذه الصفحة محمية بموجب حقوق الملكية الفكرية', 'color: orange; font-size: 14px;');
+            console.log('%cXCASH Accounting © 2026 جميع الحقوق محفوظة', 'color: #00a3ff; font-size: 12px;');
+        })();
+
+        // تشغيل الجسيمات عند التحميل
+        window.addEventListener('load', createParticles);
+    </script>
+
+    <header>
+        <div class="header-content">
+            <!-- تم تحديث رابط اللوجو -->
+            <img class="logo" src="https://l.top4top.io/p_3725dht8s1.png" alt="XCASH Accounting">
+            <div class="title">XCASH Accounting</div>
+            <div class="made">صُنع بأيدٍ سورية</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <section class="hero">
+            <h1>برنامج محاسبة احترافي</h1>
+            <p>
+                XCASH Accounting برنامج محاسبة متكامل<br>
+                ليجعل إدارة عملك أسهل – أسرع – وأكثر دقة<br>
+                نظام متكامل لإدارة المبيعات والمخزون والتقارير المالية
+            </p>
+        </section>
+
+        <section class="grid">
+            <!-- اتفاقية المستخدم -->
+            <div class="card">
+                <h2><i class="fas fa-file-contract"></i> اتفاقية المستخدم</h2>
+                <ul>
+                    <li>البرنامج محمي بالكامل بحقوق الملكية الفكرية</li>
+                    <li>يمنع نسخ البرنامج أو توزيعه بدون إذن رسمي</li>
+                    <li>يمنع تفكيك البرنامج أو محاولة تحليل الكود</li>
+                    <li>يمنع مشاركة كود التفعيل</li>
+                    <li>أي محاولة لاختراق البرنامج تعتبر جريمة رقمية</li>
+                </ul>
+                
+                <!-- إخلاء مسؤولية المطور -->
+                <div class="warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>إخلاء مسؤولية</strong><br><br>
+                    المطور (Simz9) غير مسؤول عن أي:
+                    <ul style="margin-top: 10px; margin-right: 20px;">
+                        <li>أضرار مباشرة أو غير مباشرة ناتجة عن استخدام البرنامج</li>
+                        <li>فقدان بيانات أو معلومات</li>
+                        <li>أخطاء برمجية أو تقنية</li>
+                        <li>استخدام غير صحيح للبرنامج</li>
+                    </ul>
+                    المستخدم يتحمل كامل المسؤولية عند استخدام البرنامج.
+                </div>
+            </div>
+
+            <!-- الترخيص -->
+            <div class="card">
+                <h2><i class="fas fa-key"></i> ترخيص البرنامج</h2>
+                <p>يعمل برنامج XCASH Accounting بنظام ترخيص رسمي</p>
+                
+                <h3 style="margin: 20px 0; color: #00a3ff;">طريقة التفعيل</h3>
+                <ul>
+                    <li>شراء كود التفعيل من المطور الرسمي</li>
+                    <li>إدخال الكود داخل البرنامج</li>
+                    <li>يتم تفعيل النسخة الأصلية</li>
+                </ul>
+
+                <div style="margin: 25px 0; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 15px;">
+                    <p style="font-size: 22px; color: #fff;">المطور الرسمي</p>
+                    <p style="font-size: 28px; color: #00a3ff; font-weight: 800;">Simz9</p>
+                </div>
+
+                <div class="warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>تحذير</strong><br>
+                    أي كود غير صادر من المطور الرسمي يعتبر نسخة مقرصنة وقد تحتوي على برمجيات خبيثة
+                </div>
+            </div>
+
+            <!-- الميزات -->
+            <div class="card">
+                <h2><i class="fas fa-star"></i> ميزات البرنامج</h2>
+                <ul>
+                    <li>واجهة بيع سهلة Touch POS</li>
+                    <li>تقارير مالية فورية</li>
+                    <li>إدارة المنتجات والأقسام</li>
+                    <li>واجهة عربية بالكامل</li>
+                    <li>دعم الطابعات الحرارية</li>
+                    <li>ملاحظات داخل الفاتورة</li>
+                    <li>سرعة عالية حتى على الأجهزة الضعيفة</li>
+                    <li>إضافة باركود بالفاتورة</li>
+                </ul>
+
+                <h3 style="margin: 20px 0; color: #00a3ff;">العملات المدعومة</h3>
+                <ul>
+                    <li>ريال سعودي</li>
+                    <li>درهم إماراتي</li>
+                    <li>جنيه مصري</li>
+                    <li>ليرة سورية</li>
+                    <li>دينار أردني</li>
+                </ul>
+            </div>
+
+            <!-- التحميل (آخر قسم) -->
+            <div class="card download-box">
+                <h2><i class="fas fa-download"></i> تحميل البرنامج</h2>
+                <p style="font-size: 18px;">قبل التحميل يجب الموافقة على جميع الشروط</p>
+
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="agree1" class="agree-checkbox">
+                        <label for="agree1">أوافق على اتفاقية المستخدم وجميع بنودها</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="agree2" class="agree-checkbox">
+                        <label for="agree2">أتعهد بعدم نسخ البرنامج أو توزيعه</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="agree3" class="agree-checkbox">
+                        <label for="agree3">أتعهد بعدم محاولة فك الحماية</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="agree4" class="agree-checkbox">
+                        <label for="agree4">أقر بأن المطور غير مسؤول عن أي أضرار</label>
+                    </div>
+                </div>
+
+                <!-- زر التحميل - يظهر فقط عند الموافقة على جميع الشروط -->
+                <button class="btn-download" id="downloadBtn" onclick="downloadProgram()" disabled>
+                    <i class="fas fa-download"></i>
+                    تحميل XCASH Accounting
+                </button>
+
+                <!-- قسم التواصل مع البريد الإلكتروني مرة واحدة فقط -->
+                <div class="contact-box">
+                    <h3><i class="fas fa-shopping-cart"></i> للشراء والاستفسار</h3>
+                    
+                    <!-- البريد الإلكتروني في مكان واحد فقط -->
+                    <div class="developer-email">
+                        <i class="fas fa-envelope"></i> xcashg@list.ru
+                    </div>
+                    
+                    <p style="margin: 15px 0;">أدخل رقم واتساب للتواصل السريع:</p>
+                    <input type="text" class="phone-input" id="phoneNumber" placeholder="مثال: 966512345678">
+                    <button class="btn-whatsapp" onclick="sendWhatsApp()">
+                        <i class="fab fa-whatsapp"></i>
+                        تواصل عبر واتساب
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <img class="footer-logo" src="https://l.top4top.io/p_3725dht8s1.png" alt="XCASH Accounting">
+            <div class="footer-text">
+                <p>XCASH Accounting © 2026</p>
+                <p>جميع الحقوق محفوظة</p>
+                <p style="font-size: 20px; margin: 15px 0;">صُنع بأيدٍ سورية</p>
+            </div>
+            <div class="copyright">
+                <p>XCASH ACCOUNT © 2026 جميع الحقوق محفوظة. أي نسخ غير مصرح به يعرض للمساءلة القانونية</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // التحكم في زر التحميل - يظهر فقط عند الموافقة على جميع الشروط
+        const checkboxes = document.querySelectorAll('.agree-checkbox');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        function checkAllAgreed() {
+            return Array.from(checkboxes).every(cb => cb.checked);
+        }
+
+        function updateDownloadButton() {
+            if (checkAllAgreed()) {
+                downloadBtn.classList.add('enabled');
+                downloadBtn.disabled = false;
+            } else {
+                downloadBtn.classList.remove('enabled');
+                downloadBtn.disabled = true;
+            }
+        }
+
+        // إضافة مستمعي الأحداث لمربعات الاختيار
+        if (checkboxes.length > 0) {
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', updateDownloadButton);
+            });
+        }
+
+        // دالة تحميل البرنامج
+        window.downloadProgram = function() {
+            if (checkAllAgreed()) {
+                alert('سيبدأ التحميل قريباً...');
+                // هنا ضع رابط التحميل الفعلي
+                // window.location.href = 'رابط_التحميل';
+            }
+        };
+
+        // دالة التواصل عبر واتساب
+        window.sendWhatsApp = function() {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            if (!phoneNumber.trim()) {
+                alert('الرجاء إدخال رقم الواتساب');
+                return;
+            }
+            
+            const message = 'مرحباً، أريد شراء برنامج XCASH Accounting';
+            window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
+        };
+
+        // تحديث حالة زر التحميل عند تحميل الصفحة
+        updateDownloadButton();
+    </script>
+</body>
+</html>
